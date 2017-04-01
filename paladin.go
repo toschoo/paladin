@@ -2,12 +2,12 @@
 // asynchronous interruption signals sent by the operating systems.
 // Paladin provides a Run method that expects 
 // 
-// - a function to obtain a resource (which must be a Closer)
+// - a function to obtain a resource
 //
-// - a function to release the resource (using Close)
+// - a function to release the resource
 //
-// - and a function that is run in between  
-// obtaining and releasing the resource; the user application
+// - and a function that is run in between; 
+// the user application
 // should entirely live within this function.
 //
 // Currently, only SIGINT is handled and the behaviour is to
@@ -19,22 +19,24 @@ package paladin
 import (
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"os/signal"
 	"sync"
 )
 
+// Resource is just an interface
+type Resource interface{}
+
 // Opener obtains the resources
-type Opener func() (io.Closer, error)
+type Opener func() (Resource, error)
 
 // Closer releases the resources
-type Closer func(io.Closer) error
+type Closer func(Resource) error
 
 // Runner is the home of the user application.
 // The interface passed in is the resource
 // obtained by the Opener.
-type Runner func(interface{})
+type Runner func(Resource)
 
 // Paladin implements the signal handler
 // and protection for applications.

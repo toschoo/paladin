@@ -37,17 +37,18 @@ func main() {
 		os.Exit(1)
 	}
 	nm := os.Args[1]
-	opener := func() (io.Closer, error) {
+	opener := func() (paladin.Resource, error) {
 		f, err := os.Open(nm)
 		return f, err
 	}
-	closer := func(f io.Closer) error {
+	closer := func(r paladin.Resource) error {
+		f := r.(io.Closer)
 		err := f.Close()
 		fmt.Printf("closed\n")
 		return err
 	}
 	p = paladin.New()
-	p.Run(opener, closer, func(r interface{}) {
+	p.Run(opener, closer, func(r paladin.Resource) {
 		p.Enter()
 		f := r.(io.Reader)
 		b, err := ioutil.ReadAll(f)
