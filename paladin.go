@@ -10,8 +10,8 @@
 // the user application
 // should entirely live within this function.
 //
-// Currently, only SIGINT is handled and the behaviour is to
-// close the program.
+// Currently, only SIGINT and SIGTERM are handled 
+// and the behaviour is in both cases to close the program.
 // More sophisticated behaviour and more signals will be provided
 // in the future.
 package paladin
@@ -22,6 +22,7 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"syscall"
 )
 
 // Resource is just an interface
@@ -106,7 +107,7 @@ func (p *Paladin) Run(openr Opener, closr Closer, run Runner) (err error) {
 
 	// install signal handler
 	sig := make(chan os.Signal, 1024) // can we live with a smaller channel?
-	signal.Notify(sig, os.Interrupt)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
 
 	// set up internal event queue
 	done := make(chan event)
